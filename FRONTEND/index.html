@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Online Examination System | Email + Captcha</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,sans-serif}
+    body{background:linear-gradient(135deg,#f0f4fa 0%,#d9e2ef 100%);min-height:100vh;padding:20px;color:#1e2b3c}
+    .container{max-width:1400px;margin:0 auto}
+    .card{background:white;border-radius:20px;box-shadow:0 20px 35px -12px rgba(0,0,0,.1);padding:24px 28px;margin-bottom:28px}
+    .home-hero{min-height:86vh;background:linear-gradient(90deg,rgba(13,33,52,.94),rgba(13,33,52,.82),rgba(13,33,52,.45)),url("https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1800&q=80") center/cover;border-radius:0 0 28px 28px;overflow:hidden;padding:22px 34px;display:grid;grid-template-rows:auto 1fr;box-shadow:0 24px 54px rgba(20,42,66,.22)}
+    .home-nav{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;color:white}
+    .brand-mark{font-size:clamp(1.6rem,4vw,3.6rem);font-weight:800;letter-spacing:.2px;line-height:1}
+    .hero-content{max-width:100%;padding:78px 0 58px 8px;color:white;display:grid;grid-template-columns:minmax(0,.95fr) minmax(320px,.72fr);align-items:center;gap:34px}
+    .hero-kicker{display:inline-block;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);font-size:.82rem;font-weight:700;margin-bottom:18px}
+    .hero-copy h1{font-size:clamp(2.2rem,5vw,4.8rem);line-height:1.02;max-width:840px;margin-bottom:18px;background:none;color:white;-webkit-text-fill-color:white}
+    .hero-copy p{max-width:720px;font-size:1.05rem;color:rgba(255,255,255,.86);line-height:1.65;margin-bottom:24px}
+    .home-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+    .home-actions button{padding:11px 24px;font-size:.96rem}
+    .home-actions .btn-ghost{color:white;border-color:rgba(255,255,255,.46)}
+    .hero-image-grid{display:grid;grid-template-columns:1fr .74fr;grid-template-rows:170px 170px;gap:14px}
+    .hero-image-card{background:white;border-radius:18px;overflow:hidden;box-shadow:0 16px 34px rgba(0,0,0,.26);border:1px solid rgba(255,255,255,.26)}
+    .hero-image-card.large{grid-row:span 2}
+    .hero-image-card img{width:100%;height:100%;object-fit:cover;display:block}
+    .home-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px;max-width:620px}
+    .home-stat{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.24);border-radius:14px;padding:14px;color:white}
+    .home-stat strong{display:block;font-size:1.35rem;margin-bottom:4px}
+    .home-stat span{color:rgba(255,255,255,.78);font-size:.82rem}
+    .split-section{display:grid;grid-template-columns:minmax(0,.88fr) minmax(320px,1fr);gap:28px;align-items:center;background:#f8fbff;padding:38px 34px;border-left:1px solid #dfe8f4;border-right:1px solid #dfe8f4}
+    .split-section img{width:100%;height:320px;object-fit:cover;border-radius:18px;box-shadow:0 14px 30px rgba(27,57,87,.12)}
+    .check-list{display:grid;gap:12px;margin-top:18px}
+    .check-list div{background:white;border:1px solid #e1e9f3;border-radius:14px;padding:13px 15px;color:#44566b;font-weight:600}
+    .website-section{background:white;padding:34px;border-radius:0;border:1px solid #dfe8f4;border-top:0;box-shadow:0 16px 34px rgba(27,57,87,.08)}
+    .website-section h2{text-align:center;margin-bottom:10px}
+    .website-section>p{text-align:center;max-width:720px;margin:0 auto 24px}
+    .website-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+    .website-card{border:1px solid #e1e9f3;border-radius:16px;overflow:hidden;background:#f8fbff}
+    .website-card img{width:100%;height:150px;object-fit:cover;display:block}
+    .website-card div{padding:16px}
+    .website-card strong{display:block;margin-bottom:8px;color:#1e2b3c}
+    .audience-section{background:white;padding:38px 34px;border:1px solid #dfe8f4;border-top:0;border-radius:0 0 24px 24px}
+    .audience-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:22px}
+    .audience-card{background:#f7faff;border:1px solid #e1e9f3;border-radius:16px;padding:20px;min-height:170px}
+    .audience-card h3{margin-top:0}
+    .dashboard-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px;border-bottom:2px solid #eef2f8;padding-bottom:15px}
+    h1{font-size:1.9rem;font-weight:700;background:linear-gradient(120deg,#1e2b3c,#2c5368);background-clip:text;-webkit-background-clip:text;color:transparent}
+    h2{font-size:1.5rem;font-weight:600;color:#1e2b3c;margin-bottom:16px}
+    h3{font-weight:600;color:#2c3e50;margin:12px 0 8px}
+    button{background:#2c5f8a;color:white;border:none;padding:8px 18px;border-radius:999px;font-weight:600;cursor:pointer;transition:.2s;font-size:.9rem}
+    button:hover:not(:disabled){background:#1e405e;transform:translateY(-2px)}
+    button:disabled{background:#aebaca;color:#f7f9fc;cursor:not-allowed;transform:none}
+    .btn-danger{background:#c0392b}
+    .btn-success{background:#27ae60}
+    .btn-warning{background:#e67e22}
+    .btn-ghost{background:transparent;color:#2c5f8a;border:1px solid #b8c9dc}
+    .btn-ghost:hover{color:white}
+    .btn-sm{padding:5px 12px;font-size:.8rem}
+    input,select,textarea{width:100%;padding:10px 14px;border:1px solid #ccd7e6;border-radius:14px;font-size:.9rem;margin-top:6px;margin-bottom:12px;background:white}
+    label{display:block;font-size:.86rem;font-weight:600;color:#3b4a5d;margin-top:4px}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:#2c5f8a;box-shadow:0 0 0 3px rgba(44,95,138,.2)}
+    table{width:100%;border-collapse:collapse;background:white;border-radius:16px;overflow:hidden}
+    th,td{padding:12px 10px;text-align:left;border-bottom:1px solid #e2e8f0}
+    th{background:#eef2fa;color:#1e2b3c}
+    .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:24px}
+    .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .exam-card{background:#fefefe;border-radius:18px;padding:18px;box-shadow:0 4px 12px rgba(0,0,0,.05);border:1px solid #eef2f8;margin:12px 0}
+    .flex-between{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+    .mt-2{margin-top:12px}
+    .mt-4{margin-top:20px}
+    .muted{color:#6c7a89;font-size:.9rem}
+    .badge{display:inline-block;background:#e2eaf1;padding:4px 12px;border-radius:999px;font-size:.75rem;font-weight:700;margin:2px}
+    .badge-open{background:#def8e9;color:#1d7b45}
+    .badge-upcoming{background:#fff2d9;color:#8a5400}
+    .badge-closed{background:#fde2df;color:#a83225}
+    .question-block{background:#f8fafd;padding:16px;border-radius:18px;margin-bottom:20px;border:1px solid #e6edf5}
+    .options label{display:block;margin:8px 0;cursor:pointer;font-weight:500}
+    .options input[type="radio"]{width:auto;margin:0 8px 0 0}
+    .timer{font-size:1.8rem;font-weight:800;font-family:monospace;background:#1e2b3c;color:white;display:inline-block;padding:6px 20px;border-radius:999px}
+    .login-reg-box{max-width:550px;margin:40px auto}
+    .tab-buttons{display:flex;gap:12px;margin-bottom:24px;border-bottom:1px solid #ddd;padding-bottom:12px}
+    .tab-btn{background:none;color:#2c5f8a;border-radius:999px;padding:8px 20px;font-weight:600}
+    .tab-btn.active{background:#2c5f8a;color:white}
+    .hide{display:none!important}
+    footer{text-align:center;margin-top:30px;font-size:.8rem;color:#6c7a89}
+    select[multiple]{height:auto;min-height:80px}
+    .correct{color:#27ae60;font-weight:bold}
+    .wrong{color:#c0392b}
+    .captcha-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+    .captcha-box{background:#f0f2f5;padding:12px 16px;border-radius:14px;font-family:monospace;font-size:1.5rem;font-weight:bold;letter-spacing:4px;border:1px solid #ccd7e6;color:#1e405e;flex:1;text-align:center}
+    .captcha-input{flex:1}
+    .refresh-captcha{background:#5d6e85;padding:8px 14px;font-size:.8rem}
+    @media(max-width:820px){
+      body{padding:12px}
+      .home-hero{min-height:auto}
+      .home-stats{grid-template-columns:1fr}
+      .hero-content{grid-template-columns:1fr;padding:52px 0 36px}
+      .hero-image-grid{grid-template-columns:1fr;grid-template-rows:repeat(3,160px)}
+      .hero-image-card.large{grid-row:span 1}
+      .website-cards,.split-section,.audience-grid{grid-template-columns:1fr}
+      .split-section img{height:220px}
+      .website-section{padding:20px}
+      .split-section,.audience-section{padding:22px 20px}
+      .card{padding:16px;border-radius:16px}
+      th,td{font-size:.8rem}
+    }
+  </style>
+</head>
+<body>
+<div class="container" id="appRoot">
+  <section id="homeSection">
+    <div class="home-hero">
+      <nav class="home-nav">
+        <div class="brand-mark">Online Examination System</div>
+      </nav>
+      <div class="hero-content hero-copy">
+        <div>
+          <span class="hero-kicker">Secure online exams for institutes and training centers</span>
+          <h1>Conduct exams online with deadlines, marks, and instant results.</h1>
+          <p>Create timed exams, assign them to selected students, set question-wise marks, lock attempts by exam window, and export results whenever you need them.</p>
+          <div class="home-actions">
+            <button id="homeLoginBtn" class="btn-ghost">Login</button>
+            <button id="homeRegisterBtn">Create Account</button>
+          </div>
+          <div class="home-stats">
+            <div class="home-stat"><strong id="homeOrgCount">0</strong><span>Organizations</span></div>
+            <div class="home-stat"><strong id="homeExamCount">0</strong><span>Exams</span></div>
+            <div class="home-stat"><strong id="homeUserCount">0</strong><span>Users</span></div>
+          </div>
+        </div>
+        <div class="hero-image-grid">
+          <div class="hero-image-card large"><img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=900&q=80" alt="Students taking an online examination"></div>
+          <div class="hero-image-card"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&q=80" alt="Online learning on a laptop"></div>
+          <div class="hero-image-card"><img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=700&q=80" alt="Classroom learning environment"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="split-section">
+      <div>
+        <h2>Smart tools for modern online assessments</h2>
+        <p class="muted">The system supports the full examination cycle from account registration to exam creation, student assignment, timed attempts, automatic marking, and final result export.</p>
+        <div class="check-list">
+          <div>Exam windows with start and end deadlines</div>
+          <div>Question-wise marks for flexible evaluation</div>
+          <div>Separate dashboards for managing users, exams, attempts, and results</div>
+          <div>CSV result export for records and reporting</div>
+        </div>
+      </div>
+      <img src="https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=900&q=80" alt="Students using laptops for online exams">
+    </div>
+
+    <div class="website-section">
+      <h2>Built for complete online examination management</h2>
+      <p class="muted">A simple platform-style experience for institutes that need exam creation, student access control, automatic scoring, deadlines, and result tracking in one place.</p>
+      <div class="website-cards">
+        <div class="website-card">
+          <img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=700&q=80" alt="Online test preparation">
+          <div><strong>Create and assign exams</strong><p class="muted">Examiners can prepare questions, marks, timers, and assign exams to selected students.</p></div>
+        </div>
+        <div class="website-card">
+          <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=700&q=80" alt="Students studying">
+          <div><strong>Secure student attempts</strong><p class="muted">Students can start only during the active deadline window and submit timed attempts.</p></div>
+        </div>
+        <div class="website-card">
+          <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=700&q=80" alt="Exam result reports">
+          <div><strong>Instant results and reports</strong><p class="muted">Scores are calculated automatically and staff can export results as CSV files.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="audience-section">
+      <h2 style="text-align:center;">Designed for institutions, exam teams, and learners</h2>
+      <p class="muted" style="text-align:center;max-width:760px;margin:10px auto 0;">Use it for schools, colleges, coaching centers, training programs, internal assessments, and practice tests.</p>
+      <div class="audience-grid">
+        <div class="audience-card"><h3>For administrators</h3><p class="muted">Create organizations, invite users, manage assignments, and monitor submissions from one place.</p></div>
+        <div class="audience-card"><h3>For examiners</h3><p class="muted">Build exams with questions, options, correct answers, marks, deadlines, and assigned students.</p></div>
+        <div class="audience-card"><h3>For students</h3><p class="muted">Access assigned exams, complete timed attempts, and review scores with correct-answer feedback.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="authSection" class="card login-reg-box hide">
+    <div class="flex-between">
+      <div class="tab-buttons">
+        <button id="loginTabBtn" class="tab-btn active">Login</button>
+        <button id="registerTabBtn" class="tab-btn">Register</button>
+      </div>
+      <button id="backHomeBtn" class="btn-sm btn-ghost">Home</button>
+    </div>
+    <div id="loginFormPanel">
+      <input type="text" id="loginUsername" placeholder="Username">
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button id="doLoginBtn" style="width:100%">Login</button>
+      <p style="margin-top:16px;font-size:12px;text-align:center;">Demo: admin/admin | examiner/exam | student/student</p>
+    </div>
+    <div id="registerFormPanel" class="hide">
+      <input type="text" id="regName" placeholder="Full Name">
+      <input type="email" id="regEmail" placeholder="Email Address (required)">
+      <input type="text" id="regUsername" placeholder="Username">
+      <input type="password" id="regPassword" placeholder="Password">
+      <select id="regRole">
+        <option value="admin">Admin (new organization)</option>
+        <option value="examiner">Examiner (join existing)</option>
+        <option value="student">Student (join existing)</option>
+      </select>
+      <div id="orgInviteGroup" style="display:none;">
+        <input type="text" id="orgInviteCode" placeholder="Organization Invite Code">
+      </div>
+      <!-- CAPTCHA Section -->
+      <div class="captcha-row">
+        <div class="captcha-box" id="captchaDisplay">A3F9K</div>
+        <button type="button" id="refreshCaptchaBtn" class="refresh-captcha">⟳ Refresh</button>
+      </div>
+      <input type="text" id="captchaInput" placeholder="Enter code above" class="captcha-input">
+      <button id="doRegisterBtn" style="width:100%">Create Account</button>
+      <p class="mt-4" style="font-size:12px;"><strong>Admin</strong> creates a new organization. <strong>Examiner/Student</strong> accounts need an invite code from the admin. Email + CAPTCHA required.</p>
+    </div>
+  </div>
+
+  <div id="adminDashboard" class="hide">
+    <div class="card">
+      <div class="dashboard-header">
+        <h1>Admin Panel <span id="orgNameDisplay" class="badge" style="font-size:1rem;"></span></h1>
+        <button id="adminLogoutBtn" class="btn-danger">Logout</button>
+      </div>
+      <div class="grid-2">
+        <div>
+          <h3>Manage Users</h3>
+          <div class="form-row">
+            <input type="text" id="newUserName" placeholder="Full Name">
+            <input type="email" id="newUserEmail" placeholder="Email">
+            <input type="text" id="newUserUsername" placeholder="Username">
+            <input type="password" id="newUserPassword" placeholder="Password">
+            <select id="newUserRole"><option value="student">Student</option><option value="examiner">Examiner</option></select>
+          </div>
+          <button id="addUserBtn" class="btn-success">Add User</button>
+          <div class="mt-4" style="overflow-x:auto;">
+            <table><thead><tr><th>Name</th><th>Email</th><th>Username</th><th>Role</th><th>Actions</th></tr></thead><tbody id="usersTableBody"></tbody></table>
+          </div>
+        </div>
+        <div>
+          <h3>Organization Stats</h3>
+          <p><strong>Total Exams:</strong> <span id="adminTotalExams">0</span></p>
+          <p><strong>Total Submissions:</strong> <span id="adminTotalSubmissions">0</span></p>
+          <p><strong>Students:</strong> <span id="adminTotalStudents">0</span></p>
+          <hr class="mt-2">
+          <h3>Recent Results</h3>
+          <div style="max-height:250px;overflow-y:auto;" id="adminResultsList"></div>
+        </div>
+      </div>
+      <div class="mt-4"><h3>Manage Exam Assignments</h3><div id="adminExamsAssignmentList"></div></div>
+      <div class="mt-4 flex-between"><h3>Organization Invite Code</h3><div><span id="orgInviteCodeDisplay" class="badge" style="background:#2c5f8a;color:white;"></span> <button id="copyInviteBtn" class="btn-sm">Copy</button></div></div>
+    </div>
+  </div>
+
+  <div id="examinerDashboard" class="hide">
+    <div class="card">
+      <div class="dashboard-header"><h1>Examiner Panel <span id="examinerOrgBadge" class="badge"></span></h1><button id="examinerLogoutBtn" class="btn-danger">Logout</button></div>
+      <button id="createExamBtn" class="btn-success">Create New Exam</button>
+      <div id="examsListContainer"></div>
+    </div>
+    <div id="examFormModal" class="hide card">
+      <h3>Create/Edit Exam</h3>
+      <input type="text" id="examTitle" placeholder="Exam Title">
+      <textarea id="examDesc" placeholder="Description" rows="2"></textarea>
+      <div class="form-row">
+        <div><label>Time limit (minutes)</label><input type="number" id="examTimeLimit" value="30" min="1"></div>
+        <div><label>Exam start deadline</label><input type="datetime-local" id="examStartDeadline"></div>
+        <div><label>Exam end deadline</label><input type="datetime-local" id="examEndDeadline"></div>
+      </div>
+      <div id="questionsContainer"></div>
+      <button id="addQuestionBtn" class="btn-sm">Add Question</button>
+      <div class="mt-2"><label>Assign to Students (multi-select)</label><select id="assignedStudentsSelect" multiple size="4"></select></div>
+      <div class="flex-between mt-4"><button id="saveExamBtn" class="btn-success">Save Exam</button><button id="cancelExamBtn" class="btn-warning">Cancel</button></div>
+    </div>
+  </div>
+
+  <div id="studentDashboard" class="hide">
+    <div class="card">
+      <div class="dashboard-header"><h1>Student Portal <span id="studentOrgBadge" class="badge"></span></h1><button id="studentLogoutBtn" class="btn-danger">Logout</button></div>
+      <h3>Your Assigned Exams</h3>
+      <div id="studentExamsList"></div>
+      <h3>Your Results</h3>
+      <div id="studentResultsList"></div>
+    </div>
+    <div id="examTakingView" class="hide card">
+      <div class="flex-between"><h2 id="examTakeTitle"></h2><div class="timer" id="examTimer">00:00</div></div>
+      <p id="examWindowNotice" class="muted"></p>
+      <div id="examQuestionsRender"></div>
+      <div class="flex-between mt-4"><button id="submitExamBtn" class="btn-success">Submit</button><button id="cancelExamTakeBtn" class="btn-warning">Cancel</button></div>
+    </div>
+    <div id="resultFeedbackModal" class="hide card" style="margin-top:20px;"><div id="feedbackContent"></div><button id="closeFeedbackBtn" class="btn-sm">Close</button></div>
+  </div>
+</div>
+<footer>Online Examination System | Email + CAPTCHA on registration | Invite codes, timed exams, CSV exports</footer>
+
+<script>
+  const STORAGE_USERS="exam_users", STORAGE_EXAMS="exam_exams", STORAGE_RESULTS="exam_results", STORAGE_ORGS="exam_organizations";
+  let currentUser=null, activeExamContext=null, editingExamId=null;
+  let currentCaptcha = "";
+
+  function generateCaptcha() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789";
+    let captcha = "";
+    for(let i=0; i<5; i++) captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+    return captcha;
+  }
+  function refreshCaptchaUI() {
+    currentCaptcha = generateCaptcha();
+    const displayDiv = document.getElementById("captchaDisplay");
+    if(displayDiv) displayDiv.innerText = currentCaptcha;
+  }
+  function verifyCaptcha() {
+    const userInput = document.getElementById("captchaInput")?.value.trim().toUpperCase();
+    if(!userInput || userInput !== currentCaptcha) {
+      alert("Invalid CAPTCHA. Please try again.");
+      refreshCaptchaUI();
+      document.getElementById("captchaInput").value = "";
+      return false;
+    }
+    return true;
+  }
+
+  const $=id=>document.getElementById(id);
+  const getUsers=()=>JSON.parse(localStorage.getItem(STORAGE_USERS))||[];
+  const saveUsers=v=>localStorage.setItem(STORAGE_USERS,JSON.stringify(v));
+  const getExams=()=>JSON.parse(localStorage.getItem(STORAGE_EXAMS))||[];
+  const saveExams=v=>localStorage.setItem(STORAGE_EXAMS,JSON.stringify(v));
+  const getResults=()=>JSON.parse(localStorage.getItem(STORAGE_RESULTS))||[];
+  const saveResults=v=>localStorage.setItem(STORAGE_RESULTS,JSON.stringify(v));
+  const getOrganizations=()=>JSON.parse(localStorage.getItem(STORAGE_ORGS))||[];
+  const saveOrganizations=v=>localStorage.setItem(STORAGE_ORGS,JSON.stringify(v));
+
+  function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+  function getOrganizationById(id){return getOrganizations().find(o=>o.id===id)}
+  function getUsersByOrg(id){return getUsers().filter(u=>u.organizationId===id)}
+  function getExamsByOrg(id){return getExams().filter(e=>e.organizationId===id)}
+  function getAllStudentsByOrg(id){return getUsersByOrg(id).filter(u=>u.role==="student")}
+  function formatDateTime(iso){return iso?new Date(iso).toLocaleString():"Not set"}
+  function toDateTimeLocalValue(iso){if(!iso)return"";const d=new Date(iso);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}
+  function localInputToIso(v){return v?new Date(v).toISOString():""}
+  function getQuestionMarks(q){const m=Number(q?.marks);return Number.isFinite(m)&&m>0?m:1}
+  function getExamTotalMarks(exam){return(exam.questions||[]).reduce((s,q)=>s+getQuestionMarks(q),0)}
+  function getExamStatus(exam){const now=Date.now(),start=exam.startAt?new Date(exam.startAt).getTime():-Infinity,end=exam.endAt?new Date(exam.endAt).getTime():Infinity;if(now<start)return{key:"upcoming",label:"Upcoming",className:"badge-upcoming",message:`Opens ${formatDateTime(exam.startAt)}`};if(now>end)return{key:"closed",label:"Closed",className:"badge-closed",message:`Closed ${formatDateTime(exam.endAt)}`};return{key:"open",label:"Open",className:"badge-open",message:`Open until ${formatDateTime(exam.endAt)}`}}
+  function renderStatusBadge(exam){const s=getExamStatus(exam);return`<span class="badge ${s.className}">${s.label}</span>`}
+  function renderWindow(exam){return`<p class="muted">Starts: ${formatDateTime(exam.startAt)}<br>Ends: ${formatDateTime(exam.endAt)}</p>`}
+
+  function initData(){
+    if(getOrganizations().length) return;
+    const now=new Date(), starts=new Date(now.getTime()-3600000), ends=new Date(now.getTime()+7*24*3600000);
+    saveOrganizations([{id:"org_demo",name:"Demo University",inviteCode:"DEMO123",adminUserId:"u_admin"}]);
+    saveUsers([
+      {id:"u_admin",name:"Admin User",email:"admin@demo.com",username:"admin",password:"admin",role:"admin",organizationId:"org_demo"},
+      {id:"u_examiner",name:"Prof. Johnson",email:"examiner@demo.com",username:"examiner",password:"exam",role:"examiner",organizationId:"org_demo"},
+      {id:"u_student1",name:"Alice Wonder",email:"alice@demo.com",username:"student",password:"student",role:"student",organizationId:"org_demo"},
+      {id:"u_student2",name:"Bob Builder",email:"bob@demo.com",username:"bob",password:"bob123",role:"student",organizationId:"org_demo"}
+    ]);
+    saveExams([{
+      id:"exam1",title:"JavaScript Basics",description:"For Demo University students",timeLimit:10,startAt:starts.toISOString(),endAt:ends.toISOString(),
+      questions:[
+        {questionText:"What does JS stand for?",options:["Java Style","Just Script","JavaScript","JavaSync"],correctOptionIndex:2,marks:2},
+        {questionText:"Which symbol is used for JavaScript single-line comments?",options:["//","<!--","##","**"],correctOptionIndex:0,marks:1}
+      ],
+      createdBy:"u_examiner",organizationId:"org_demo",assignedStudentIds:["u_student1","u_student2"],createdAt:now.toISOString()
+    }]);
+    saveResults([]);
+  }
+
+  function updateHomeStats(){
+    $("homeOrgCount").innerText=getOrganizations().length;
+    $("homeExamCount").innerText=getExams().length;
+    $("homeUserCount").innerText=getUsers().length;
+  }
+  function hideAllSections(){
+    ["homeSection","authSection","adminDashboard","examinerDashboard","studentDashboard","examTakingView"].forEach(id=>$(id).classList.add("hide"));
+  }
+  function showHome(){hideAllSections();$("homeSection").classList.remove("hide");updateHomeStats()}
+  function showAuth(mode="login"){hideAllSections();$("authSection").classList.remove("hide");if(mode==="register"){$("registerTabBtn").click();refreshCaptchaUI();} else $("loginTabBtn").click();}
+  function showDashboard(){
+    hideAllSections();
+    if(!currentUser){showHome();return}
+    if(currentUser.role==="admin"){$("adminDashboard").classList.remove("hide");renderAdminPanel()}
+    if(currentUser.role==="examiner"){$("examinerDashboard").classList.remove("hide");renderExaminerPanel()}
+    if(currentUser.role==="student"){$("studentDashboard").classList.remove("hide");renderStudentPanel()}
+  }
+  function login(username,password){
+    const user=getUsers().find(u=>u.username===username.trim()&&u.password===password);
+    if(!user)return alert("Invalid credentials");
+    currentUser=user;showDashboard();
+  }
+  function logout(){
+    if(activeExamContext?.timerInterval)clearInterval(activeExamContext.timerInterval);
+    currentUser=null;activeExamContext=null;showHome();
+  }
+
+  // Admin, Examiner, Student render functions (simplified but fully functional - same core logic)
+  function renderAdminPanel(){ /* Keeping previous full logic but brevity */ 
+    const org=getOrganizationById(currentUser.organizationId), users=getUsersByOrg(currentUser.organizationId), exams=getExamsByOrg(currentUser.organizationId);
+    $("orgNameDisplay").innerText=org?.name||"";$("orgInviteCodeDisplay").innerText=org?.inviteCode||"";
+    $("copyInviteBtn").onclick=()=>{navigator.clipboard.writeText(org.inviteCode);alert("Copied!")};
+    const results=getResults().filter(r=>users.some(u=>u.id===r.studentId)&&exams.some(e=>e.id===r.examId));
+    $("usersTableBody").innerHTML="";
+    users.forEach(u=>{if(u.role!=="admin"){const row=$("usersTableBody").insertRow();row.insertCell(0).innerText=u.name;row.insertCell(1).innerText=u.email||"";row.insertCell(2).innerText=u.username;row.insertCell(3).innerText=u.role;const btn=document.createElement("button");btn.innerText="Delete";btn.className="btn-sm btn-danger";btn.onclick=()=>{if(confirm(`Delete ${u.name}?`)){saveUsers(getUsers().filter(x=>x.id!==u.id));renderAdminPanel()}};row.insertCell(4).appendChild(btn);}});
+    $("adminTotalExams").innerText=exams.length;$("adminTotalSubmissions").innerText=results.length;$("adminTotalStudents").innerText=users.filter(u=>u.role==="student").length;
+    $("adminResultsList").innerHTML=results.slice(-5).reverse().map(r=>{const e=exams.find(x=>x.id===r.examId), s=users.find(x=>x.id===r.studentId);return`<div class="badge">${escapeHtml(s?.name||r.studentId)} | ${escapeHtml(e?.title||"Exam")} | ${r.score}/${r.totalMarks}</div>`;}).join("")||"<p>None</p>";
+    const students=getAllStudentsByOrg(currentUser.organizationId);
+    $("adminExamsAssignmentList").innerHTML=exams.map(exam=>`<div class="exam-card"><div class="flex-between"><strong>${escapeHtml(exam.title)}</strong><div>${renderStatusBadge(exam)} <button class="exportCsvBtn btn-sm" data-examid="${exam.id}">Export CSV</button></div></div>${renderWindow(exam)}<select multiple class="admin-assign-select" data-examid="${exam.id}" size="3">${students.map(s=>`<option value="${s.id}" ${exam.assignedStudentIds?.includes(s.id)?"selected":""}>${escapeHtml(s.name)} (${escapeHtml(s.username)})</option>`).join("")}</select><button class="admin-update-assign btn-sm" data-examid="${exam.id}">Update</button></div>`).join("");
+    document.querySelectorAll(".admin-update-assign").forEach(btn=>btn.onclick=()=>{const select=document.querySelector(`.admin-assign-select[data-examid="${btn.dataset.examid}"]`);const selected=Array.from(select.selectedOptions).map(o=>o.value), examsArr=getExams(), idx=examsArr.findIndex(e=>e.id===btn.dataset.examid);if(idx!==-1){examsArr[idx].assignedStudentIds=selected;saveExams(examsArr);alert("Updated");renderAdminPanel()}});
+    document.querySelectorAll(".exportCsvBtn").forEach(btn=>btn.onclick=()=>exportResultsToCSV(btn.dataset.examid));
+  }
+  function exportResultsToCSV(examId){const exam=getExams().find(e=>e.id===examId);if(!exam)return;const users=getUsersByOrg(currentUser.organizationId);let csv="Student Name,Email,Username,Score,Total Marks,Percentage,Submitted At\n";getResults().filter(r=>r.examId===examId).forEach(r=>{const s=users.find(u=>u.id===r.studentId);csv+=`"${s?.name||""}","${s?.email||""}","${s?.username||""}",${r.score},${r.totalMarks},${r.percentage}%,${new Date(r.submittedAt).toLocaleString()}\n`;});const blob=new Blob([csv],{type:"text/csv"}), link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download=`${exam.title}_results.csv`;link.click();URL.revokeObjectURL(link.href);}
+  function renderExaminerPanel(){const org=getOrganizationById(currentUser.organizationId);$("examinerOrgBadge").innerText=org?.name||"";const exams=getExams().filter(e=>e.createdBy===currentUser.id&&e.organizationId===currentUser.organizationId);$("examsListContainer").innerHTML=exams.length?"":"";exams.forEach(exam=>{const card=document.createElement("div");card.className="exam-card";card.innerHTML=`<div class="flex-between"><strong>${escapeHtml(exam.title)}</strong><span>${renderStatusBadge(exam)} <span class="badge">${exam.questions.length} Q | ${getExamTotalMarks(exam)} marks</span></span></div><p>${escapeHtml(exam.description||"")}</p>${renderWindow(exam)}<div><button class="editExamBtn" data-id="${exam.id}">Edit</button> <button class="deleteExamBtn btn-danger" data-id="${exam.id}">Delete</button> <button class="viewExamResultsBtn" data-id="${exam.id}">Results</button> <button class="exportExamCsvBtn btn-sm" data-id="${exam.id}">Export CSV</button></div>`;$("examsListContainer").appendChild(card);});document.querySelectorAll(".editExamBtn").forEach(b=>b.onclick=()=>openExamForm(b.dataset.id));document.querySelectorAll(".deleteExamBtn").forEach(b=>b.onclick=()=>{if(confirm("Delete?")){saveExams(getExams().filter(e=>e.id!==b.dataset.id));renderExaminerPanel()}});document.querySelectorAll(".viewExamResultsBtn").forEach(b=>b.onclick=()=>{const users=getUsersByOrg(currentUser.organizationId), results=getResults().filter(r=>r.examId===b.dataset.id);alert(results.map(r=>`${users.find(u=>u.id===r.studentId)?.name||r.studentId}: ${r.score}/${r.totalMarks}`).join("\n")||"None");});document.querySelectorAll(".exportExamCsvBtn").forEach(b=>b.onclick=()=>exportResultsToCSV(b.dataset.id));$("examFormModal").classList.add("hide");}
+  function openExamForm(examId=null){editingExamId=examId;$("examFormModal").classList.remove("hide");const students=getAllStudentsByOrg(currentUser.organizationId), select=$("assignedStudentsSelect");select.innerHTML=students.map(s=>`<option value="${s.id}">${escapeHtml(s.name)} (${escapeHtml(s.username)})</option>`).join("");const now=new Date(), defaultEnd=new Date(now.getTime()+24*3600000);$("questionsContainer").innerHTML="";if(examId){const exam=getExams().find(e=>e.id===examId);$("examTitle").value=exam.title;$("examDesc").value=exam.description||"";$("examTimeLimit").value=exam.timeLimit;$("examStartDeadline").value=toDateTimeLocalValue(exam.startAt);$("examEndDeadline").value=toDateTimeLocalValue(exam.endAt);exam.questions.forEach((q,i)=>addQuestionBlock(i,q.questionText,q.options,q.correctOptionIndex,getQuestionMarks(q)));Array.from(select.options).forEach(o=>o.selected=exam.assignedStudentIds?.includes(o.value));}else{$("examTitle").value="";$("examDesc").value="";$("examTimeLimit").value=30;$("examStartDeadline").value=toDateTimeLocalValue(now.toISOString());$("examEndDeadline").value=toDateTimeLocalValue(defaultEnd.toISOString());addQuestionBlock(0);Array.from(select.options).forEach(o=>o.selected=false);}}
+  function addQuestionBlock(index,qText="",opts=["","","",""],correct=0,marks=1){const div=document.createElement("div");div.className="question-block";div.innerHTML=`<input type="text" placeholder="Question" class="qText" value="${escapeHtml(qText)}"><div class="options"><input type="text" placeholder="A" class="opt0" value="${escapeHtml(opts[0])}"><input type="text" placeholder="B" class="opt1" value="${escapeHtml(opts[1])}"><input type="text" placeholder="C" class="opt2" value="${escapeHtml(opts[2])}"><input type="text" placeholder="D" class="opt3" value="${escapeHtml(opts[3])}"></div><div class="form-row"><div><label>Correct</label><select class="correctOpt"><option value="0" ${correct===0?"selected":""}>A</option><option value="1" ${correct===1?"selected":""}>B</option><option value="2" ${correct===2?"selected":""}>C</option><option value="3" ${correct===3?"selected":""}>D</option></select></div><div><label>Marks</label><input type="number" class="qMarks" min="1" step="1" value="${marks}"></div></div><button class="removeQuestionBtn btn-sm btn-danger">Remove</button>`;$("questionsContainer").appendChild(div);div.querySelector(".removeQuestionBtn").onclick=()=>div.remove();}
+  function saveExamFromForm(){const title=$("examTitle").value.trim(), description=$("examDesc").value, timeLimit=parseInt($("examTimeLimit").value,10), startAt=localInputToIso($("examStartDeadline").value), endAt=localInputToIso($("examEndDeadline").value);if(!title)return alert("Title required");if(!startAt||!endAt)return alert("Deadlines required");if(new Date(endAt)<=new Date(startAt))return alert("End after start");const blocks=document.querySelectorAll("#questionsContainer .question-block");if(!blocks.length)return alert("Add at least one question");const questions=[];for(const b of blocks){const qText=b.querySelector(".qText").value.trim(), opts=[b.querySelector(".opt0").value,b.querySelector(".opt1").value,b.querySelector(".opt2").value,b.querySelector(".opt3").value], correct=parseInt(b.querySelector(".correctOpt").value,10), marks=parseInt(b.querySelector(".qMarks").value,10);if(!qText||opts.some(o=>!o.trim()))return alert("All fields required");if(marks<1)return alert("Marks >0");questions.push({questionText:qText,options:opts,correctOptionIndex:correct,marks});}const assignedStudentIds=Array.from($("assignedStudentsSelect").selectedOptions).map(o=>o.value), exams=getExams();if(editingExamId){const idx=exams.findIndex(e=>e.id===editingExamId);if(idx!==-1)exams[idx]={...exams[idx],title,description,timeLimit,startAt,endAt,questions,assignedStudentIds,updatedAt:new Date().toISOString()}}else exams.push({id:"exam"+Date.now(),title,description,timeLimit,startAt,endAt,questions,createdBy:currentUser.id,organizationId:currentUser.organizationId,assignedStudentIds,createdAt:new Date().toISOString()});saveExams(exams);$("examFormModal").classList.add("hide");renderExaminerPanel();}
+  function renderStudentPanel(){const org=getOrganizationById(currentUser.organizationId);$("studentOrgBadge").innerText=org?.name||"";const results=getResults().filter(r=>r.studentId===currentUser.id), exams=getExamsByOrg(currentUser.organizationId).filter(e=>e.assignedStudentIds?.includes(currentUser.id));$("studentExamsList").innerHTML=exams.length?"":"<p>No exams assigned</p>";exams.forEach(exam=>{const attempted=results.some(r=>r.examId===exam.id), status=getExamStatus(exam), card=document.createElement("div");card.className="exam-card";const action=attempted?`<button class="viewResultBtn" data-exam="${exam.id}">View Result</button>`:status.key==="open"?`<button class="startExamBtn" data-exam="${exam.id}">Start Exam</button>`:`<button disabled>${status.key==="upcoming"?"Not Open":"Closed"}</button>`;card.innerHTML=`<div class="flex-between"><strong>${escapeHtml(exam.title)}</strong><span>${renderStatusBadge(exam)} <span class="badge">${exam.questions.length} Q | ${getExamTotalMarks(exam)} marks</span></span></div><p>${escapeHtml(exam.description||"")}</p>${renderWindow(exam)}<p class="muted">${status.message}</p><div>${action}</div>`;$("studentExamsList").appendChild(card);});document.querySelectorAll(".startExamBtn").forEach(b=>b.onclick=()=>startExam(b.dataset.exam));document.querySelectorAll(".viewResultBtn").forEach(b=>b.onclick=()=>showDetailedResult(getResults().find(r=>r.examId===b.dataset.exam&&r.studentId===currentUser.id)));$("studentResultsList").innerHTML=results.map(r=>{const e=getExams().find(x=>x.id===r.examId);return`<div class="badge result-link" data-result="${r.id}" style="cursor:pointer;">${escapeHtml(e?.title||"Exam")}: ${r.score}/${r.totalMarks} (${r.percentage}%)</div>`;}).join("")||"<p>No attempts</p>";document.querySelectorAll(".result-link").forEach(el=>el.onclick=()=>showDetailedResult(getResults().find(r=>r.id===el.dataset.result)));}
+  function showDetailedResult(result){if(!result)return;const exam=getExams().find(e=>e.id===result.examId);if(!exam)return;$("feedbackContent").innerHTML=`<h3>${escapeHtml(exam.title)} - Result</h3><p>Score: ${result.score}/${result.totalMarks} (${result.percentage}%)<br>Submitted: ${new Date(result.submittedAt).toLocaleString()}</p><hr>${result.details||"<i>Details only for score</i>"}`;$("resultFeedbackModal").classList.remove("hide");$("closeFeedbackBtn").onclick=()=>$("resultFeedbackModal").classList.add("hide");}
+  function startExam(examId){const exam=getExams().find(e=>e.id===examId);if(!exam||exam.organizationId!==currentUser.organizationId)return;const status=getExamStatus(exam);if(status.key!=="open"){alert(status.key==="upcoming"?`Opens at ${formatDateTime(exam.startAt)}`:"Deadline passed");return;}if(getResults().some(r=>r.examId===examId&&r.studentId===currentUser.id)){alert("Already taken");return;}$("studentDashboard").classList.add("hide");$("examTakingView").classList.remove("hide");$("examTakeTitle").innerText=exam.title;$("examWindowNotice").innerText=`Closes at ${formatDateTime(exam.endAt)}`;const answers=new Array(exam.questions.length).fill(null);$("examQuestionsRender").innerHTML="";exam.questions.forEach((q,i)=>{const div=document.createElement("div");div.className="question-block";div.innerHTML=`<p><strong>Q${i+1}. ${escapeHtml(q.questionText)}</strong> <span class="badge">${getQuestionMarks(q)} marks</span></p>`;const opts=document.createElement("div");opts.className="options";q.options.forEach((opt,j)=>opts.innerHTML+=`<label><input type="radio" name="q${i}" value="${j}"> ${escapeHtml(opt)}</label>`);div.appendChild(opts);$("examQuestionsRender").appendChild(div);div.querySelectorAll(`input[name="q${i}"]`).forEach(r=>r.onchange=e=>answers[i]=parseInt(e.target.value,10));});let timeLeft=Math.min(exam.timeLimit*60,Math.max(0,Math.floor((new Date(exam.endAt).getTime()-Date.now())/1000)));const updateTimer=()=>{$("examTimer").innerText=`${String(Math.floor(timeLeft/60)).padStart(2,"0")}:${String(timeLeft%60).padStart(2,"0")}`};if(activeExamContext?.timerInterval)clearInterval(activeExamContext.timerInterval);const interval=setInterval(()=>{if(timeLeft<=0||getExamStatus(exam).key!=="open"){clearInterval(interval);alert("Time over.");submitExamAnswers(exam,answers)}else{timeLeft--;updateTimer()}},1000);updateTimer();activeExamContext={examId,timerInterval:interval,userAnswers:answers,examObj:exam};$("submitExamBtn").onclick=()=>{if(confirm("Submit?")){clearInterval(interval);submitExamAnswers(exam,answers)}};$("cancelExamTakeBtn").onclick=()=>{clearInterval(interval);$("examTakingView").classList.add("hide");$("studentDashboard").classList.remove("hide");activeExamContext=null;renderStudentPanel()};}
+  function submitExamAnswers(exam,answers){if(getResults().some(r=>r.examId===exam.id&&r.studentId===currentUser.id))return;let score=0;const details=[];exam.questions.forEach((q,i)=>{const marks=getQuestionMarks(q),correct=answers[i]!==null&&answers[i]===q.correctOptionIndex;if(correct)score+=marks;const userAns=answers[i]!==null?q.options[answers[i]]:"Not answered", correctAns=q.options[q.correctOptionIndex];details.push(`<div class="${correct?"correct":"wrong"}">Q${i+1}: ${escapeHtml(q.questionText)}<br>Marks: ${correct?marks:0}/${marks}<br>Your: ${escapeHtml(userAns)}<br>Correct: ${escapeHtml(correctAns)}</div><hr>`);});const total=getExamTotalMarks(exam), percent=((score/total)*100).toFixed(1), result={id:"res"+Date.now()+Math.random(),studentId:currentUser.id,examId:exam.id,score,totalMarks:total,percentage:percent,submittedAt:new Date().toISOString(),details:details.join("")};const results=getResults();results.push(result);saveResults(results);clearInterval(activeExamContext?.timerInterval);$("examTakingView").classList.add("hide");$("studentDashboard").classList.remove("hide");activeExamContext=null;alert(`Score: ${score}/${total} (${percent}%)`);renderStudentPanel();showDetailedResult(result);}
+
+  // Event listeners
+  $("homeLoginBtn").onclick=()=>showAuth("login");$("homeRegisterBtn").onclick=()=>showAuth("register");$("backHomeBtn").onclick=showHome;
+  $("doLoginBtn").onclick=()=>login($("loginUsername").value,$("loginPassword").value);$("adminLogoutBtn").onclick=logout;$("examinerLogoutBtn").onclick=logout;$("studentLogoutBtn").onclick=logout;
+  $("loginTabBtn").onclick=()=>{$("loginTabBtn").classList.add("active");$("registerTabBtn").classList.remove("active");$("loginFormPanel").classList.remove("hide");$("registerFormPanel").classList.add("hide")};
+  $("registerTabBtn").onclick=()=>{$("registerTabBtn").classList.add("active");$("loginTabBtn").classList.remove("active");$("registerFormPanel").classList.remove("hide");$("loginFormPanel").classList.add("hide");refreshCaptchaUI();};
+  $("regRole").onchange=function(){$("orgInviteGroup").style.display=this.value==="admin"?"none":"block"};
+  $("addUserBtn").onclick=()=>{const name=$("newUserName").value.trim(), email=$("newUserEmail").value.trim(), username=$("newUserUsername").value.trim(), password=$("newUserPassword").value.trim(), role=$("newUserRole").value; if(!name||!email||!username||!password)return alert("All fields required"); if(!email.includes("@"))return alert("Valid email"); const users=getUsers();if(users.find(u=>u.username===username))return alert("Username exists"); users.push({id:"u_"+Date.now()+"_"+Math.random().toString(36).substr(2,6),name,email,username,password,role,organizationId:currentUser.organizationId}); saveUsers(users);$("newUserName").value="";$("newUserEmail").value="";$("newUserUsername").value="";$("newUserPassword").value="";renderAdminPanel();};
+  $("doRegisterBtn").onclick=()=>{if(!verifyCaptcha())return; const name=$("regName").value.trim(), email=$("regEmail").value.trim(), username=$("regUsername").value.trim(), password=$("regPassword").value.trim(), role=$("regRole").value, inviteCode=$("orgInviteCode").value.trim(); if(!name||!email||!username||!password)return alert("Fill all fields"); if(!email.includes("@"))return alert("Valid email required"); const users=getUsers();if(users.find(u=>u.username===username))return alert("Username exists"); let organizationId=null; if(role==="admin"){const orgName=prompt("Enter Organization Name:","My Institute");if(!orgName)return; const newOrg={id:"org_"+Date.now(),name:orgName,inviteCode:orgName.toUpperCase().replace(/\s/g,"")+Math.floor(Math.random()*1000),adminUserId:null}; saveOrganizations([...getOrganizations(),newOrg]);organizationId=newOrg.id;}else{const org=getOrganizations().find(o=>o.inviteCode===inviteCode);if(!org)return alert("Invalid invite code.");organizationId=org.id;} const newId="u_"+Date.now()+"_"+Math.random().toString(36).substr(2,6); users.push({id:newId,name,email,username,password,role,organizationId});saveUsers(users); if(role==="admin"){const orgs=getOrganizations(), idx=orgs.findIndex(o=>o.id===organizationId);if(idx!==-1){orgs[idx].adminUserId=newId;saveOrganizations(orgs)}alert(`Registration success! Your invite code: ${getOrganizations().find(o=>o.id===organizationId).inviteCode}`)} else alert("Registration successful! You can now login."); $("loginTabBtn").click();$("regName").value="";$("regEmail").value="";$("regUsername").value="";$("regPassword").value="";$("captchaInput").value="";refreshCaptchaUI();updateHomeStats();};
+  $("createExamBtn").onclick=()=>openExamForm();$("addQuestionBtn").onclick=()=>addQuestionBlock(document.querySelectorAll(".question-block").length);$("saveExamBtn").onclick=saveExamFromForm;$("cancelExamBtn").onclick=()=>$("examFormModal").classList.add("hide");
+  $("#refreshCaptchaBtn").onclick=()=>refreshCaptchaUI();
+  initData();$("regRole").dispatchEvent(new Event("change"));refreshCaptchaUI();showHome();
+</script>
+</body>
+</html> 
